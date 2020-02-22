@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title>Javascript - Growing Barnsley Ferns</title>
+		<meta name="author" content="Matthew Page">
+		<meta name="description" content="">
+		<meta name="keywords" content="">
+		<link href="css/main.css" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Encode+Sans+Condensed" rel="stylesheet">
+	</head>
+	<body>
+		<header>
+			<h1>Barnsley Ferns</h1>
+			<p>Growing virtual ferns</p>
+		</header>
+		<canvas id="ground"></canvas>
+<style>
+h2 { margin-bottom: 20px; }
+p.quote { margin-bottom: 20px; }
+p.quote em { font-weight: bold; }
+p.equation {
+	font-family: times;
+	font-size: 1.5rem;
+	padding: 0 0 20px 0;
+}
+p.equation sub {
+	font-size: 1rem;
+}
+td.func {
+	font-family: serif;
+}
+th {
+	font-family: serif;
+	font-weight: normal;
+}
+</style>
+		<div id="settings">
+			<p>
+				<button onclick="ground.style.backgroundColor = 'red';">red</button>
+				<button onclick="ground.style.backgroundColor = 'blue';">blue</button>
+				<button onclick="ground.style.backgroundColor = 'green';">green</button>
+				<button onclick="ground.style.backgroundColor = 'skyblue';">skyblue</button>
+				<button onclick="ground.style.backgroundColor = 'white';">white</button>
+				<button onclick="ground.style.backgroundColor = 'black';">Black</button>
+			<h2>The Equation</h2>
+			<p class="equation">
+				<img src="./gfx/barnsley1.svg" style="float: right">
+				x<sub>n+1</sub> = ax<sub>n</sub> + by<sub>n</sub> + e
+				<br />
+		        y<sub>n+1</sub> = cx<sub>n</sub> + dy<sub>n</sub> + f
+			</p>
+			<p class="quote">
+				“we speculate that when a V -variable geometrical fractal model is found that has a good
+				match to the geometry of a given plant, then there is a specific relationship between
+				these code trees and the information stored in the genes of the plant” - <em>Michael Barnsley</em>
+			</p>
+			<h2>Values</h2>
+			<table>
+				<tr>
+					<th></th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th><th>f</th><th>p</th><th>Name</th>
+				</tr>
+				<tr>
+					<td class="func">f1</td>
+					<td><input type="number" id="f1a" value="0"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.00"
+							oninput="document.getElementById('f1a').value = this.value; growFern();"></td>
+					<td><input type="number" id="f1b" value="0"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.00"
+							oninput="document.getElementById('f1b').value = this.value; growFern();"></td>
+					<td><input type="number" id="f1c" value="0"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.00"
+							oninput="document.getElementById('f1c').value = this.value; growFern();"></td>
+					<td><input type="number" id="f1d" value="0.16"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.16"
+							oninput="document.getElementById('f1d').value = this.value; growFern();"></td>
+					<td><input type="number" id="f1e" value="0"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.00"
+							oninput="document.getElementById('f1e').value = this.value; growFern();"></td>
+					<td><input type="number" id="f1f" value="0"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.00"
+							oninput="document.getElementById('f1f').value = this.value; growFern();"></td>
+					<td><input type="number" id="f1p" value="0.01"></td>
+					<td><input type="text" id="f1n" value="Stem"></td>
+				</tr>
+				<tr>
+					<td class="func">f2</td>
+					<td><input type="number" id="f2a" value="0.85"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.85"
+							oninput="document.getElementById('f2a').value = this.value; growFern();"></td>
+					<td><input type="number" id="f2b" value="0.04"><br />
+						<input type="range" min="-0.25" max="0.25" step="0.01" value="0.04"
+							oninput="document.getElementById('f2b').value = this.value; growFern();"></td>
+					<td><input type="number" id="f2c" value="-0.04"><br />
+						<input type="range" min="-0.5" max="0.5" step="0.01" value="-0.04"
+							oninput="document.getElementById('f2c').value = this.value; growFern();"></td>
+					<td><input type="number" id="f2d" value="0.85"><br />
+						<input type="range" min="0.45" max="1" step="0.01" value="0.85"
+							oninput="document.getElementById('f2d').value = this.value; growFern();"></td>
+					<td><input type="number" id="f2e" value="0"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0"
+							oninput="document.getElementById('f2e').value = this.value; growFern();"></td>
+					<td><input type="number" id="f2f" value="1.6"><br />
+						<input type="range" min="0.45" max="3" step="0.01" value="1.6"
+							oninput="document.getElementById('f2f').value = this.value; growFern();"></td>
+					<td><input type="number" id="f2p" value="0.85"></td>
+					<td><input type="text" id="f2n" value="Smaller leafs"></td>
+				</tr>
+				<tr>
+					<td class="func">f3</td>
+					<td><input type="number" id="f3a" value="0.20"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.20"
+							oninput="document.getElementById('f3a').value = this.value; growFern();"></td>
+					<td><input type="number" id="f3b" value="-0.26"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="-0.26"
+							oninput="document.getElementById('f3b').value = this.value; growFern();"></td>
+					<td><input type="number" id="f3c" value="0.23"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.23"
+							oninput="document.getElementById('f3c').value = this.value; growFern();"></td>
+					<td><input type="number" id="f3d" value="0.22"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.22"
+							oninput="document.getElementById('f3d').value = this.value; growFern();"></td>
+					<td><input type="number" id="f3e" value="0"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.00"
+							oninput="document.getElementById('f3e').value = this.value; growFern();"></td>
+					<td><input type="number" id="f3f" value="1.60"><br />
+						<input type="range" min="-2" max="3" step="0.01" value="1.6"
+							oninput="document.getElementById('f3f').value = this.value; growFern();"></td>
+					<td><input type="number" id="f3p" value="0.07"></td>
+					<td><input type="text" id="f3n" value="Stem"></td>
+				</tr>
+				<tr>
+					<td class="func">f4</td>
+					<td><input type="number" id="f4a" value="-0.15"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="-0.15"
+							oninput="document.getElementById('f4a').value = this.value; growFern();"></td>
+					<td><input type="number" id="f4b" value="0.28"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.28"
+							oninput="document.getElementById('f4b').value = this.value; growFern();"></td>
+					<td><input type="number" id="f4c" value="0.26"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.26"
+							oninput="document.getElementById('f4c').value = this.value; growFern();"></td>
+					<td><input type="number" id="f4d" value="0.24"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.24"
+							oninput="document.getElementById('f4d').value = this.value; growFern();"></td>
+					<td><input type="number" id="f4e" value="0"><br />
+						<input type="range" min="-1" max="1" step="0.01" value="0.00"
+							oninput="document.getElementById('f4e').value = this.value; growFern();"></td>
+					<td><input type="number" id="f4f" value="0.44"><br />
+						<input type="range" min="-2" max="2" step="0.01" value="0.44"
+							oninput="document.getElementById('f4f').value = this.value; growFern();"></td>
+					<td><input type="number" id="f4p" value="0.07"></td>
+					<td><input type="text" id="f4n" value="Stem"></td>
+				</tr>
+			</table>
+			<!-- // w	a		b		c		d		e	f		p		Portion generated
+		    // ƒ1		0		0		0		0.16	0	0		0.01	Stem
+		    // ƒ2		0.85	0.04	−0.04	0.85	0	1.60	0.85	Successively smaller leaflets
+		    // ƒ3		0.20	−0.26	0.23	0.22	0	1.60	0.07	Largest left-hand leaflet
+		    // ƒ4		−0.15	0.28	0.26	0.24	0	0.44	0.07	Largest right-hand leaflet -->
+			<p class="buttons">
+				<button onclick="growFern()">Grow this fern</button>
+				<button>Grow random ferns</button>
+			</p>
+		</div>
+
+		<!-- Page footer and links -->
+		<footer>
+			<div class="info">
+				<p class="author">By <a href="http://www.mjp.co" target="_blank">Matthew Page</a></p>
+				<p class="release">Last updated : 8 Feb 2019. Licence : Public Domain. Version : 0.1</p>
+			</div>
+			<div class="links">
+				<p>
+					<a href="https://www.linkedin.com/in/matthew-page-71a2a3163/" class="linkedin" target="_blank" title="Linked In">Linked In</a>
+					<a href="https://twitter.com/matthewpage_web" class="twitter" target="_blank" title="Twitter">Twitter</a>
+					<a href="https://github.com/MatthewPageUK/" class="github" target="_blank" alt="Source Code on Github">Github</a>
+					<a href="https://www.youtube.com/user/mattandhisdog" class="youtube" target="_blank" title="Youtube">Youtube</a>
+				</p>
+			</div>
+		</footer>
+
+		<!-- Load some scripts -->
+		<script src="js/vector.js" type="text/javascript"></script>
+		<script src="js/barnsley-fern.js" type="text/javascript"></script>
+
+		<!-- Main demo script -->
+		<script type="text/javascript">
+
+			/* Window resize */
+			let resizeId = false;
+			window.onresize = function() {
+				clearTimeout(resizeId);
+				resizeId = setTimeout(location.reload(), 1000);
+			};
+
+			/* The ground */
+			const ground = document.getElementById("ground");
+			const groundCTX = ground.getContext("2d");
+			ground.width = window.innerWidth;
+			ground.height = window.innerHeight;
+			groundCTX.translate(0, ground.height);
+			groundCTX.scale(1, -1);
+
+
+			/* Create the fern */
+			const myFern = new BarnsleyFern();
+			// const myFern2 = new BarnsleyFern();
+			// const myFern3 = new BarnsleyFern();
+			// const myFern4 = new BarnsleyFern();
+/*
+{
+	f1: {
+		a: {
+			min: -1.0000,
+			max: 1.0000,
+			rmin: 0.005,
+			rmax: 0.95,
+			default: 0.16
+		}
+	},
+	f2 {
+
+	},
+	f3 {
+
+	},
+	f4 {
+
+	}
+}
+*/
+			let animator = false;
+			let isPaused = false;
+			let isHidden = false;
+
+			/* Settings elements in the HTML DOM */
+			const settings = {
+				f1a: document.getElementById("f1a"),
+				f1b: document.getElementById("f1b"),
+				f1c: document.getElementById("f1c"),
+				f1d: document.getElementById("f1d"),
+				f1e: document.getElementById("f1e"),
+				f1f: document.getElementById("f1f"),
+				f1p: document.getElementById("f1p"),
+
+				f2a: document.getElementById("f2a"),
+				f2b: document.getElementById("f2b"),
+				f2c: document.getElementById("f2c"),
+				f2d: document.getElementById("f2d"),
+				f2e: document.getElementById("f2e"),
+				f2f: document.getElementById("f2f"),
+				f2p: document.getElementById("f2p"),
+
+				f3a: document.getElementById("f3a"),
+				f3b: document.getElementById("f3b"),
+				f3c: document.getElementById("f3c"),
+				f3d: document.getElementById("f3d"),
+				f3e: document.getElementById("f3e"),
+				f3f: document.getElementById("f3f"),
+				f3p: document.getElementById("f3p"),
+
+				f4a: document.getElementById("f4a"),
+				f4b: document.getElementById("f4b"),
+				f4c: document.getElementById("f4c"),
+				f4d: document.getElementById("f4d"),
+				f4e: document.getElementById("f4e"),
+				f4f: document.getElementById("f4f"),
+				f4p: document.getElementById("f4p")
+			};
+
+function growFern() {
+
+	groundCTX.clearRect(0, 0, ground.width, ground.height);
+	isPaused = true;
+
+	myFern.transformations = [];
+	myFern.ticks = 0;
+
+    myFern.transformations.push(new BarnsleyTransformation(settings.f1a.value, settings.f1b.value, settings.f1c.value,
+		settings.f1d.value, settings.f1e.value, settings.f1f.value, settings.f1p.value,'Stem'));
+
+	myFern.transformations.push(new BarnsleyTransformation(settings.f2a.value, settings.f2b.value, settings.f2c.value,
+		settings.f2d.value, settings.f2e.value, settings.f2f.value, settings.f2p.value,'Stem'));
+
+	myFern.transformations.push(new BarnsleyTransformation(settings.f3a.value, settings.f3b.value, settings.f3c.value,
+		settings.f3d.value, settings.f3e.value, settings.f3f.value, settings.f3p.value,'Stem'));
+
+	myFern.transformations.push(new BarnsleyTransformation(settings.f4a.value, settings.f4b.value, settings.f4c.value,
+		settings.f4d.value, settings.f4e.value, settings.f4f.value, settings.f4p.value,'Stem'));
+	isPaused = false;
+	console.log(myFern);
+
+}
+			/**
+			 * Main animation loop - runs continuosly
+			 */
+			function animationLoop() {
+
+				// groundCTX.clearRect(0, 0, ground.width, ground.height);
+				// if(!isPaused) boidWorld.update();
+				// boidFlock.boids.forEach((boid)=>{
+				// 	drawBoid(boid);
+				// });
+
+				if(!isPaused) {
+					groundCTX.fillStyle = "green";
+					for(let l = 0; l < myFern.max; l++) {
+						let x = ((myFern.x + 3) * 50)+200;
+						let y = (myFern.y) * 50;
+groundCTX.fillStyle = `hsl(${y/2}, 90%, 40%)`;
+						groundCTX.fillRect(x, y, 1, 1);
+						myFern.tick();
+					}
+// 					groundCTX.fillStyle = "darkgreen";
+// 					for(let l = 0; l < 200; l++) {
+// 						let x = ((myFern2.x + 3) * 30)+300;
+// 						let y = (myFern2.y) * 30;
+// groundCTX.fillStyle = `hsl(${y/4}, 90%, 40%)`;
+// 						groundCTX.fillRect(x, y, 1, 1);
+// 						myFern2.tick();
+// 					}
+// 					groundCTX.fillStyle = "lightgreen";
+// 					for(let l = 0; l < 200; l++) {
+// 						let x = ((myFern3.x + 3) * 70)+400;
+// 						let y = (myFern3.y) * 70;
+// 	groundCTX.fillStyle = `hsl(${y/6}, 90%, 40%)`;
+//
+// 						groundCTX.fillRect(x, y, 2, 2);
+// 						myFern3.tick();
+// 					}
+// 					groundCTX.fillStyle = "green";
+// 					for(let l = 0; l < 200; l++) {
+// 						let x = ((myFern4.x + 3) * 50)+5;
+// 						let y = (myFern4.y) * 50;
+// 						groundCTX.fillRect(x, y, 1, 1);
+// 						myFern4.tick();
+// 					}
+				}
+				animator = requestAnimationFrame(animationLoop);
+			}
+
+			/* Start the animation loop */
+			animationLoop();
+
+		</script>
+	</body>
+</html>
